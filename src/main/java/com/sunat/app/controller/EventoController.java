@@ -1,7 +1,10 @@
 package com.sunat.app.controller;
 
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,14 +23,26 @@ import com.sunat.app.service.IEventoService;
 public class EventoController {
 	private final IEventoService eventoService;
 	
+	 @Autowired
+     private Environment environment;
+	
 	public EventoController(IEventoService eventoService) {
 		this.eventoService = eventoService;
 	}
 	
-	@GetMapping
+	 @GetMapping
+     public Map<String, Object> listarTodos() {
+         return Map.of(
+             "POD_NAME", environment.getProperty("POD_NAME", "Unknown"),   
+             "POD_ID", environment.getProperty("POD_ID", "Unkown"), 
+             "SALUDO", environment.getProperty("config.saludo", "Unknown"),
+             "eventos", eventoService.listarTodos());
+     }
+	
+	/*@GetMapping
 	public ResponseEntity<List<Evento>> listarTodos() {
 		return ResponseEntity.ok(eventoService.listarTodos());
-	}
+	}*/
 
 	@GetMapping("/{id}")
 	public ResponseEntity<?> obtenerPorId(@PathVariable Long id) {
